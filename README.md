@@ -31,7 +31,7 @@ The REST API to the example app is described below.
 
 `GET /api/stats`
 
-    curl --location --request GET 'http://localhost:3000/api/stats'
+    curl --location --request GET 'http://localhost:8000/api/stats'
 
 ### Response
 
@@ -47,7 +47,7 @@ The REST API to the example app is described below.
 
 `GET /api/health`
 
-    curl --location --request GET 'http://localhost:3000/api/health' 
+    curl --location --request GET 'http://localhost:8000/api/health' 
 
 ### Response
     {
