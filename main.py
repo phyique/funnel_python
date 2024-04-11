@@ -75,8 +75,8 @@ async def health():
     return {'data': {'message': message,
                      'average': average}}
 
-@app.get("/api/cancel")
-async def cancel():
-    global thread
-    thread.cancel()
-    return {"data": {"isSuccessful": True}}
+# @app.get("/api/cancel")
+# async def cancel():
+#     global thread
+#     thread.cancel()
+#     return {"data": {"isSuccessful": True}}
