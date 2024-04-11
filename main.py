@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from apscheduler.schedulers.background import BackgroundScheduler
-from datetime import datetime
+from datetime import datetime, timedelta
 import threading
 import requests
 
@@ -10,19 +10,6 @@ app = FastAPI()
 scheduler = BackgroundScheduler()
 cache = []
 sustained = False
-thread = None
-
-
-def set_interval(func, seconds):
-    global thread
-
-    def helper():
-        set_interval(func, seconds)
-        func()
-
-    thread = threading.Timer(seconds, helper)
-    thread.start()
-    return thread
 
 
 def satellite_time_lapse(variable):
@@ -47,16 +34,15 @@ def poll():
 
 def is_sustained(average):
     global sustained
-    sustained = average > 160
+    print("is_sustained_called", average)
+    sustained = average > 130
 
-
-# poll for satellite date every 5 seconds
-# set_interval(poll, 5)
 
 @app.on_event("startup")
 def start_background_processes():
     scheduler.add_job(poll, "interval", seconds=5)
     scheduler.start()
+
 
 @app.get("/api/stats")
 async def stats():
@@ -69,14 +55,15 @@ async def stats():
 @app.get("/api/health/")
 async def health():
     global sustained
-    message = 'Altitude is A-OK'
     a_min_cache = list(filter(lambda n: n['time_lapse'] < 1, cache))
     altitudes = list(map(lambda n: n['altitude'], a_min_cache))
     average = sum(altitudes) / (1 if len(altitudes) == 0 else len(altitudes))
     if average < 160:
         message = 'WARNING: RAPID ORBITAL DECAY IMMINENT'
-    if average >= 160 and not sustained:
+    elif average >= 160 and not sustained:
         message = 'Sustained Low Earth Orbit Resumed'
-    # set_interval(is_sustained(average), 60)
+    else:
+        message = 'Altitude is A-OK'
+    scheduler.add_job(is_sustained, 'date', run_date=datetime.now() + timedelta(seconds=60), args=[average])
     return {'data': {'message': message,
                      'average': average}}
