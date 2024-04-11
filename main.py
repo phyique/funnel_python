@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
-import threading
 import requests
 
 url = 'http://nestio.space/api/satellite/data'
@@ -47,12 +46,14 @@ def start_background_processes():
 @app.get("/api/stats")
 async def stats():
     altitudes = list(map(lambda n: n['altitude'], cache))
+    if len(altitudes) == 0:
+        altitudes = [1]
     return {'data': {'maximum': max(altitudes),
                      'minimum': min(altitudes),
                      'average': sum(altitudes) / len(altitudes)}}
 
 
-@app.get("/api/health/")
+@app.get("/api/health")
 async def health():
     global sustained
     a_min_cache = list(filter(lambda n: n['time_lapse'] < 1, cache))
