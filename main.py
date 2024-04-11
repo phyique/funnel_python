@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 import threading
 import requests
@@ -6,6 +7,7 @@ import requests
 url = 'http://nestio.space/api/satellite/data'
 
 app = FastAPI()
+scheduler = BackgroundScheduler()
 cache = []
 sustained = False
 thread = None
@@ -49,8 +51,12 @@ def is_sustained(average):
 
 
 # poll for satellite date every 5 seconds
-set_interval(poll, 5)
+# set_interval(poll, 5)
 
+@app.on_event("startup")
+def start_background_processes():
+    scheduler.add_job(poll, "interval", seconds=5)
+    scheduler.start()
 
 @app.get("/api/stats")
 async def stats():
@@ -71,12 +77,6 @@ async def health():
         message = 'WARNING: RAPID ORBITAL DECAY IMMINENT'
     if average >= 160 and not sustained:
         message = 'Sustained Low Earth Orbit Resumed'
-    set_interval(is_sustained(average), 60)
+    # set_interval(is_sustained(average), 60)
     return {'data': {'message': message,
                      'average': average}}
-
-# @app.get("/api/cancel")
-# async def cancel():
-#     global thread
-#     thread.cancel()
-#     return {"data": {"isSuccessful": True}}
