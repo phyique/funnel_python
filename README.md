@@ -16,6 +16,7 @@ To get the Python server running locally:
 
 - [fastapi](https://github.com/tiangolo/fastapi) - FastAPI framework, high performance, easy to learn, fast to code, ready for production
 - [requests](https://github.com/request/request) - Simplified HTTP request client.
+- [apscheduler](https://github.com/agronholm/apscheduler) - Task scheduling library for Python
 - ...to be continued
 
 
