@@ -1,3 +1,4 @@
+from typing import Annotated
 from fastapi import FastAPI
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
