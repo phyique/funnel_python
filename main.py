@@ -63,7 +63,7 @@ async def health():
     message = 'Altitude is A-OK'
     a_min_cache = list(filter(lambda n: n['time_lapse'] < 1, cache))
     altitudes = list(map(lambda n: n['altitude'], a_min_cache))
-    average = sum(altitudes) / len(altitudes)
+    average = sum(altitudes) / (1 if len(altitudes) == 0 else len(altitudes))
     if average < 160:
         message = 'WARNING: RAPID ORBITAL DECAY IMMINENT'
     if average >= 160 and not sustained:
