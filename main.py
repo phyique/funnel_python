@@ -11,6 +11,7 @@ scheduler = BackgroundScheduler()
 cache = []
 sustained = False
 
+
 def time_elapsed(variable):
     time_utc = datetime.now().utcnow()
     last_updated = datetime.fromisoformat(variable['last_updated'])
