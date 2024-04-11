@@ -34,7 +34,6 @@ def poll():
 
 def is_sustained(average):
     global sustained
-    print("is_sustained_called", average)
     sustained = average > 130
 
 
