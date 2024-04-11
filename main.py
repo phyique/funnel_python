@@ -11,7 +11,6 @@ scheduler = BackgroundScheduler()
 cache = []
 sustained = False
 
-
 def time_elapsed(variable):
     time_utc = datetime.now().utcnow()
     last_updated = datetime.fromisoformat(variable['last_updated'])
@@ -32,9 +31,9 @@ def poll():
     cache_builder(r.json())
 
 
-def is_sustained(average):
+def set_sustained_status(status):
     global sustained
-    sustained = average > 160
+    sustained = status
 
 
 @app.on_event("startup")
@@ -61,10 +60,11 @@ async def health():
     average = sum(altitudes) / (1 if len(altitudes) == 0 else len(altitudes))
     if average < 160:
         message = 'WARNING: RAPID ORBITAL DECAY IMMINENT'
+        sustained = False
     elif average >= 160 and not sustained:
         message = 'Sustained Low Earth Orbit Resumed'
+        scheduler.add_job(set_sustained_status, 'date', run_date=datetime.now() + timedelta(seconds=60), args=[True])
     else:
         message = 'Altitude is A-OK'
-    scheduler.add_job(is_sustained, 'date', run_date=datetime.now() + timedelta(seconds=60), args=[average])
     return {'data': {'message': message,
                      'average': average}}
