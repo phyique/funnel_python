@@ -31,9 +31,9 @@ def poll():
     cache_builder(r.json())
 
 
-def is_sustained():
+def set_sustained_status(status):
     global sustained
-    sustained = True
+    sustained = status
 
 
 @app.on_event("startup")
@@ -63,7 +63,7 @@ async def health():
         sustained = False
     elif average >= 160 and not sustained:
         message = 'Sustained Low Earth Orbit Resumed'
-        scheduler.add_job(is_sustained, 'date', run_date=datetime.now() + timedelta(seconds=60), args=[])
+        scheduler.add_job(set_sustained_status, 'date', run_date=datetime.now() + timedelta(seconds=60), args=[True])
     else:
         message = 'Altitude is A-OK'
     return {'data': {'message': message,
