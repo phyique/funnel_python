@@ -8,9 +8,12 @@ url = 'http://nestio.space/api/satellite/data'
 app = FastAPI()
 cache = []
 sustained = False
+thread = None
 
 
 def set_interval(func, seconds):
+    global thread
+
     def helper():
         set_interval(func, seconds)
         func()
@@ -71,3 +74,9 @@ async def health():
     set_interval(is_sustained(average), 60)
     return {'data': {'message': message,
                      'average': average}}
+
+@app.get("/api/cancel")
+async def cancel():
+    global thread
+    thread.cancel()
+    return {"data": {"isSuccessful": True}}
