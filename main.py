@@ -38,7 +38,7 @@ def set_sustained_status(status):
 
 @app.on_event("startup")
 def start_background_processes():
-    scheduler.add_job(poll, 'interval', seconds=5)
+    scheduler.add_job(poll, 'interval', seconds=10)
     scheduler.start()
 
 
