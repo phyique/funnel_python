@@ -10,6 +10,8 @@ To get the Python server running locally:
 - `pip install -r requirements` to install all required dependencies
 - `uvicorn main:app --reload` to start the local server
 
+Open [http://localhost:8000](http://localhost:8000) with your browser to see the result.
+
 # Code Overview
 
 ## Dependencies
