@@ -21,7 +21,7 @@ To get the Python server running locally:
 
 ## Application Structure
 
-- `main.py` - The entry point to our application. This file defines our express server and and performs polling logic for satellite api
+- `main.py` - The entry point to our application. This file defines our fastapi server and performs background polling logic for satellite api
 
 # REST API
 

@@ -12,7 +12,7 @@ cache = []
 sustained = False
 
 
-def satellite_time_lapse(variable):
+def time_elapsed(variable):
     time_utc = datetime.now().utcnow()
     last_updated = datetime.fromisoformat(variable['last_updated'])
     variable['time_lapse'] = (time_utc - last_updated).seconds / 60
@@ -22,7 +22,7 @@ def satellite_time_lapse(variable):
 def cache_builder(obj):
     global cache
     cache.append(obj)
-    cache = list(map(satellite_time_lapse, cache))
+    cache = list(map(time_elapsed, cache))
     cache = list(filter(lambda n: n['time_lapse'] < 5, cache))
     print(cache)
 
