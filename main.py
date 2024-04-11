@@ -34,7 +34,7 @@ def poll():
 
 def is_sustained(average):
     global sustained
-    sustained = average > 130
+    sustained = average > 160
 
 
 @app.on_event("startup")
