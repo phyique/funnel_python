@@ -4,7 +4,7 @@ This repo is the funnel short app
 
 # Getting started
 
-To get the Python server running locally:
+To get this Python application running locally:
 
 - Clone this repo
 - `pip install -r requirements` to install all required dependencies
