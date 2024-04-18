@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
 import requests
+import time
 
 url = 'http://nestio.space/api/satellite/data'
 
@@ -20,6 +21,15 @@ async def lifespan(_: FastAPI):
     print('clean up lifespan')
 
 app = FastAPI(lifespan=lifespan)
+
+
+@app.middleware('http')
+async def add_process_time_header(request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    response.headers['X-Process-Time'] = str(process_time)
+    return response
 
 
 def time_elapsed(variable):
