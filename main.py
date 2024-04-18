@@ -13,11 +13,11 @@ sustained = False
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    scheduler.add_job(poll, "interval", seconds=5)
+    scheduler.add_job(poll, 'interval', seconds=5, max_instances=3)
     scheduler.start()
     yield
     scheduler.shutdown()
-    print("clean up lifespan")
+    print('clean up lifespan')
 
 app = FastAPI(lifespan=lifespan)
 
@@ -47,7 +47,7 @@ def set_sustained_status(status):
     sustained = status
 
 
-@app.get("/api/stats")
+@app.get('/api/stats')
 async def stats():
     altitudes = list(map(lambda n: n['altitude'], cache))
     if len(altitudes) == 0:
@@ -57,7 +57,7 @@ async def stats():
                      'average': sum(altitudes) / len(altitudes)}}
 
 
-@app.get("/api/health")
+@app.get('/api/health')
 async def health():
     global sustained
     a_min_cache = list(filter(lambda n: n['time_lapse'] < 1, cache))
