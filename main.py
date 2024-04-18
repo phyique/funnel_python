@@ -1,4 +1,4 @@
-from typing import Annotated
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
@@ -6,10 +6,21 @@ import requests
 
 url = 'http://nestio.space/api/satellite/data'
 
-app = FastAPI()
 scheduler = BackgroundScheduler()
 cache = []
 sustained = False
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    scheduler.add_job(poll, "interval", seconds=5)
+    scheduler.start()
+    yield
+    scheduler.shutdown()
+    print("clean up lifespan")
+
+app = FastAPI(lifespan=lifespan)
+
 
 def time_elapsed(variable):
     time_utc = datetime.now().utcnow()
@@ -34,12 +45,6 @@ def poll():
 def set_sustained_status(status):
     global sustained
     sustained = status
-
-
-@app.on_event("startup")
-def start_background_processes():
-    scheduler.add_job(poll, "interval", seconds=5)
-    scheduler.start()
 
 
 @app.get("/api/stats")
