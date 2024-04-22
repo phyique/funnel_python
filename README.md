@@ -1,6 +1,6 @@
 # Sample
 
-This repo is the funnel short app
+This repo for a sample satellite app built with python 
 
 # Getting started
 
