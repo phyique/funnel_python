@@ -1,4 +1,4 @@
-# Funnel Leasing Coding Assignment
+# Sample
 
 This repo is the funnel short app
 
