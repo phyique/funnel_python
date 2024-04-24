@@ -1,14 +1,35 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
 import requests
+import time
 
 url = 'http://nestio.space/api/satellite/data'
 
-app = FastAPI()
 scheduler = BackgroundScheduler()
 cache = []
 sustained = False
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    scheduler.add_job(poll, 'interval', seconds=5, max_instances=3)
+    scheduler.start()
+    yield
+    scheduler.shutdown()
+    print('clean up lifespan')
+
+app = FastAPI(lifespan=lifespan)
+
+
+@app.middleware('http')
+async def add_process_time_header(request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    response.headers['X-Process-Time'] = str(process_time)
+    return response
 
 
 def time_elapsed(variable):
@@ -36,13 +57,7 @@ def set_sustained_status(status):
     sustained = status
 
 
-@app.on_event("startup")
-def start_background_processes():
-    scheduler.add_job(poll, 'interval', seconds=10, max_instances=3)
-    scheduler.start()
-
-
-@app.get("/api/stats")
+@app.get('/api/stats')
 async def stats():
     altitudes = list(map(lambda n: n['altitude'], cache))
     if len(altitudes) == 0:
@@ -52,7 +67,7 @@ async def stats():
                      'average': sum(altitudes) / len(altitudes)}}
 
 
-@app.get("/api/health")
+@app.get('/api/health')
 async def health():
     global sustained
     a_min_cache = list(filter(lambda n: n['time_lapse'] < 1, cache))
