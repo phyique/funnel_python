@@ -1,6 +1,6 @@
 # Sample
 
-This repo for a sample satellite app built with python 
+This repo for a sample satellite app built with python
 
 # Getting started
 
